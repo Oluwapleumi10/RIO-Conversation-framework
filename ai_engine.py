@@ -6,33 +6,32 @@ from google.genai import types
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
 def generate_conversation_hooks(target_name: str, reflection_text: str, interest_text: str, observation_text: str) -> str:
-    """
-    Engine 1: Takes RIO inputs and generates actionable conversation hooks.
-    """
-    prompt = f"""
+   prompt = f"""
     You are helping me send a casual text message to my friend, {target_name}.
-    
+
     Here is my context:
     - Reflection: {reflection_text}
     - Interests: {interest_text}
     - Observations: {observation_text}
-    
-    Task: Generate exactly 4 casual conversation starters based strictly on this data.
-    
+
+    Task:
+    Generate distinct, casual conversation starters based strictly on this data. 
+    Create one starter for every unique topic, memory, or detail mentioned (do not pad with fluff or generic fillers).
+
     Strict Rules:
-    1. Keep it short and punchy (1 to 2 sentences maximum).
+    1. Keep each starter short and punchy (1 to 2 sentences maximum).
     2. Sound like a real, normal person texting on WhatsApp.
-    3. NEVER use formal, cheesy, or overly enthusiastic words. 
-    4. DO NOT invent facts, memories, or scenarios. Only use the exact details provided in the context.
+    3. NEVER use formal, cheesy, or overly enthusiastic words.
+    4. DO NOT invent facts, memories, or scenarios. Only use the exact details provided.
     5. Format as a simple numbered list. Do not include any introductory or concluding text.
     """
-    try:
+   try:
         response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt
         )
         return response.text
-    except Exception as e:
+   except Exception as e:
         return "API_ERROR_QUOTA_EXHAUSTED"
 
 
